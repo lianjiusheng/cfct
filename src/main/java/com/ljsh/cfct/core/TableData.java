@@ -87,4 +87,12 @@ public class TableData {
 		throw new RuntimeException("Unsupported data type:" + fieldInfo.getDataType() + ",fieldName:" + fieldInfo.getColumnName());
 	}
 
+
+	@Override
+	public String toString() {
+		StringBuilder sb=new StringBuilder();
+		sb.append("table:").append(getTableName()).append("\n");
+		sb.append(rows.values());
+		return sb.toString();
+	}
 }

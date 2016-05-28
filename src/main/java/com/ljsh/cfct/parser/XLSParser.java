@@ -1,22 +1,20 @@
 package com.ljsh.cfct.parser;
 
+import com.ljsh.cfct.core.FieldInfo;
+import com.ljsh.cfct.core.RowData;
+import com.ljsh.cfct.core.TableData;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-
-import com.ljsh.cfct.core.FieldInfo;
-import com.ljsh.cfct.core.RowData;
-import com.ljsh.cfct.core.TableData;
 
 public class XLSParser {
 
@@ -29,7 +27,7 @@ public class XLSParser {
 	public File getFile() {
 		return file;
 	}
-
+    public static SimpleDateFormat default_date_format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	public List<TableData> parse() {
 		InputStream is = null;
 		List<TableData> tables = new ArrayList<TableData>();
@@ -37,9 +35,9 @@ public class XLSParser {
 		try {
 			is = new FileInputStream(file);
 			Workbook wb = null;
-			try {
+			if(file.getCanonicalPath().endsWith(".xls")){
 				wb = new HSSFWorkbook(is);
-			} catch (IOException e) {
+			}else {
 				wb = new XSSFWorkbook(is);
 			}
 			int sheetCount = wb.getNumberOfSheets();
@@ -89,7 +87,7 @@ public class XLSParser {
 			for (FieldInfo info : tableData.getIndexToFieldInfos().values()) {
 				Cell c1 = row.getCell(info.getColumnIndex(), Row.RETURN_BLANK_AS_NULL);
 				if (c1 != null) {
-					rowData.addData(info.getColumnIndex(), c1.getStringCellValue());
+					rowData.addData(info.getColumnIndex(), getCellValue(c1));
 				} else {
 					rowData.addData(info.getColumnIndex(), StringUtils.EMPTY);
 				}
@@ -98,6 +96,34 @@ public class XLSParser {
 		}
 
 		return tableData;
+	}
+
+	private String getCellValue(Cell c1 ){
+
+		Object value=null;
+		switch (c1.getCellType()) {
+            case Cell.CELL_TYPE_STRING:
+                value = c1.getStringCellValue();
+                break;
+            case Cell.CELL_TYPE_BOOLEAN:
+                value = c1.getBooleanCellValue();
+                break;
+            case Cell.CELL_TYPE_NUMERIC:
+                if (DateUtil.isCellDateFormatted(c1)) {
+                    value = c1.getDateCellValue();
+                    value = default_date_format.format(value);
+                } else {
+                    value = c1.getNumericCellValue();
+                }
+                break;
+            case Cell.CELL_TYPE_FORMULA:
+                value = c1.getCellFormula();
+                break;
+            default:
+                value = StringUtils.EMPTY;
+                break;
+        }
+		return String.valueOf(value);
 	}
 
 	private void parseTableDataField(Sheet sheet, int rowStart, TableData tableData) {
