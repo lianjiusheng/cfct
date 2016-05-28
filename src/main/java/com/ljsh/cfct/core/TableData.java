@@ -1,5 +1,7 @@
 package com.ljsh.cfct.core;
 
+import com.ljsh.cfct.parser.XLSParser;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -43,17 +45,19 @@ public class TableData {
 		rows.put(data.getRow(), data);
 	}
 
-	public Map<String, Object> getFieldDataMap(int row) {
+	public Map<String, Object> getFieldDataMap(int row,int side) {
 		if (rows.isEmpty() || !rows.containsKey(row)) {
 			return new TreeMap<String, Object>();
 		}
-		return getFieldDataMap(rows.get(row));
+		return getFieldDataMap(rows.get(row),side);
 	}
 
-	public Map<String, Object> getFieldDataMap(RowData data) {
+	public Map<String, Object> getFieldDataMap(RowData data,int side) {
 		Map<String, Object> map = new TreeMap<String, Object>();
 		for (Entry<Integer, FieldInfo> e : indexToFieldInfos.entrySet()) {
-			map.put(e.getValue().getColumnName(), getData(data, e.getValue()));
+			if((e.getValue().getSide()&side)!=0){
+				map.put(e.getValue().getColumnName(), getData(data, e.getValue()));
+			}
 		}
 		return map;
 	}
@@ -79,10 +83,10 @@ public class TableData {
 			return row.getDouble(index);
 		}
 		if ("date".equalsIgnoreCase(dataType)) {
-			return row.getData(index);
+			return row.getDate(index, XLSParser.default_date_format);
 		}
 		if ("number".equalsIgnoreCase(dataType)) {
-			return row.getInt(index);
+			return row.getDouble(index);
 		}
 		throw new RuntimeException("Unsupported data type:" + fieldInfo.getDataType() + ",fieldName:" + fieldInfo.getColumnName());
 	}

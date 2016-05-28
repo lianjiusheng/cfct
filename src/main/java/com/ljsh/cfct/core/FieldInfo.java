@@ -2,11 +2,12 @@ package com.ljsh.cfct.core;
 
 public class FieldInfo {
 
+	public static int SIDE_CLIENT=1;
+	public static int SIDE_SERVER=2;
 	private int columnIndex;
 	private String columnName;
 	private String dataType;
-	private boolean client;
-	private boolean server;
+	private int side;
 
 	public int getColumnIndex() {
 		return columnIndex;
@@ -32,20 +33,13 @@ public class FieldInfo {
 		this.dataType = dataType;
 	}
 
-	public boolean isClient() {
-		return client;
+
+	public int getSide() {
+		return side;
 	}
 
-	public void setClient(boolean client) {
-		this.client = client;
-	}
-
-	public boolean isServer() {
-		return server;
-	}
-
-	public void setServer(boolean server) {
-		this.server = server;
+	public void setSide(int side) {
+		this.side = side;
 	}
 
 }

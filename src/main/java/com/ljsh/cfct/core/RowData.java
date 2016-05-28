@@ -1,5 +1,6 @@
 package com.ljsh.cfct.core;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,13 +37,11 @@ public class RowData {
 	}
 
 	public int getInt(int index) {
-		String data = getData(index);
-		return Integer.valueOf(StringUtils.isBlank(data) ? "0" : data);
+		return (int) getDouble(index);
 	}
 
 	public float getFloat(int index) {
-		String data = getData(index);
-		return Float.valueOf(StringUtils.isBlank(data) ? "0" : data);
+        return (float) getDouble(index);
 	}
 
 	public double getDouble(int index) {
@@ -51,16 +50,19 @@ public class RowData {
 	}
 
 	public long getLong(int index) {
-		String data = getData(index);
-		return Long.valueOf(StringUtils.isBlank(data) ? "0" : data);
+        return (long) getDouble(index);
 	}
 
 	public Date getDate(int index, String pattern) {
+		SimpleDateFormat fmt = new SimpleDateFormat(pattern);
+		return getDate(index, fmt);
+	}
+
+	public Date getDate(int index, DateFormat fmt) {
 		String data = getData(index);
 		if (StringUtils.isBlank(data)) {
 			return null;
 		}
-		SimpleDateFormat fmt = new SimpleDateFormat(pattern);
 		try {
 			return fmt.parse(getData(index));
 		} catch (ParseException e) {

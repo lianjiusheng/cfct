@@ -140,18 +140,18 @@ public class XLSParser {
 				Row sideRow = sheet.getRow(rowStart + 1);
 				Cell c1 = sideRow.getCell(cn, Row.RETURN_BLANK_AS_NULL);
 				if (c1 != null) {
-					String sideCountent = c.getStringCellValue();
+					String sideCountent = c1.getStringCellValue();
 					if (sideCountent.contains("C") || sideCountent.contains("c")) {
-						info.setClient(true);
+						info.setSide(info.getSide()|FieldInfo.SIDE_CLIENT);
 					}
-					if (sideCountent.contains("S") || sideCountent.contains("c")) {
-						info.setServer(true);
+					if (sideCountent.contains("S") || sideCountent.contains("s")) {
+                        info.setSide(info.getSide()|FieldInfo.SIDE_SERVER);
 					}
 				}
 				Row typeRow = sheet.getRow(rowStart + 2);
 				Cell c2 = typeRow.getCell(cn, Row.RETURN_BLANK_AS_NULL);
 				if (c2 != null) {
-					info.setDataType(c.getStringCellValue());
+					info.setDataType(c2.getStringCellValue());
 				} else {
 					info.setDataType("string");
 				}
