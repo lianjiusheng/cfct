@@ -1,5 +1,6 @@
 package com.ljsh.cfct.converter;
 
+import com.ljsh.cfct.core.FieldInfo;
 import com.ljsh.cfct.core.TableData;
 
 import java.io.File;
@@ -48,5 +49,21 @@ public abstract class Converter {
             directory.mkdirs();
         }
     }
-    public abstract void convert(int side) throws Throwable;
+
+
+    public  void exeConvert(int side) throws Throwable{
+
+        checkOutDirectory();
+
+        if ((side& FieldInfo.SIDE_SERVER)!=0){
+            convert(FieldInfo.SIDE_SERVER, getServerDirectory());
+        }
+
+        if ((side& FieldInfo.SIDE_CLIENT)!=0){
+            convert(FieldInfo.SIDE_CLIENT, getClientDirectory());
+        }
+    }
+
+
+    protected abstract void convert(int side, File directory) throws Throwable;
 }
